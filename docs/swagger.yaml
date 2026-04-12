@@ -1,0 +1,62 @@
+basePath: /api/v1
+host: localhost:8080
+info:
+  contact: {}
+  description: API шаблона микросервиса.
+  title: Service API
+  version: "1.0"
+paths:
+  /example:
+    get:
+      description: Возвращает приветственное сообщение. Используйте как основу для
+        новых endpoint-ов.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Пример endpoint
+      tags:
+      - example
+  /healthz:
+    get:
+      description: Возвращает статус "ok" если сервис запущен.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Проверка жизнеспособности сервиса
+      tags:
+      - infrastructure
+  /readyz:
+    get:
+      description: Возвращает "ready" если сервис готов принимать трафик, "not ready"
+        при shutdown.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Проверка готовности сервиса
+      tags:
+      - infrastructure
+swagger: "2.0"

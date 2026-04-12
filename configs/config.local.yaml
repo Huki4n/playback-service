@@ -1,0 +1,22 @@
+service_name: playback-service
+http_port: "8080"
+log_level: debug
+shutdown_timeout: 15s
+
+tracing_enabled: true
+otlp_endpoint: localhost:4317
+
+postgres:
+  dsn: "postgres://postgres:postgres@localhost:5432/tracks?sslmode=disable"
+  max_conns: 10
+  min_conns: 2
+
+redis:
+  addr: "localhost:6379"
+  db: 0
+  pool_size: 10
+
+kafka:
+  brokers:
+    - "localhost:9092"
+  topic: "playback"

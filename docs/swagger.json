@@ -1,0 +1,91 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API шаблона микросервиса.",
+        "title": "Service API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/example": {
+            "get": {
+                "description": "Возвращает приветственное сообщение. Используйте как основу для новых endpoint-ов.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "example"
+                ],
+                "summary": "Пример endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/healthz": {
+            "get": {
+                "description": "Возвращает статус \"ok\" если сервис запущен.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "infrastructure"
+                ],
+                "summary": "Проверка жизнеспособности сервиса",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/readyz": {
+            "get": {
+                "description": "Возвращает \"ready\" если сервис готов принимать трафик, \"not ready\" при shutdown.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "infrastructure"
+                ],
+                "summary": "Проверка готовности сервиса",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

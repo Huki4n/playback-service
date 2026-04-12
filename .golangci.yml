@@ -1,0 +1,47 @@
+version: "2"
+
+run:
+  go: "1.26"
+  timeout: 3m
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - unused
+    - gosimple
+    - ineffassign
+    - typecheck
+    - bodyclose
+    - noctx
+    - gosec
+    - errname
+    - errorlint
+    - exhaustive
+    - gocritic
+    - gofumpt
+    - revive
+    - unconvert
+    - unparam
+
+linters-settings:
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - style
+      - performance
+  revive:
+    rules:
+      - name: unexported-return
+        disabled: true
+
+issues:
+  exclude-dirs:
+    - vendor
+  max-issues-per-linter: 0
+  max-same-issues: 0

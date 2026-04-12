@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  lint:
+    uses: <owner>/swe-proj/.github/workflows/go-lint.yml@main
+    # with:
+    #   go-version: "1.26"
+    #   working-directory: "."
+
+  test:
+    uses: <owner>/swe-proj/.github/workflows/go-test.yml@main
+    # with:
+    #   go-version: "1.26"
+    #   working-directory: "."
+
+  build:
+    needs: [lint, test]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    uses: <owner>/swe-proj/.github/workflows/docker-build-push.yml@main
+    with:
+      image-name: my-service
+    permissions:
+      contents: read
+      packages: write
