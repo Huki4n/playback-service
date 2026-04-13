@@ -24,9 +24,10 @@ type Config struct {
 	TracingEnabled bool   `mapstructure:"tracing_enabled"`
 	OTLPEndpoint   string `mapstructure:"otlp_endpoint"`
 
-	Postgres postgres.Config      `mapstructure:"postgres"`
-	Redis    redis.Config         `mapstructure:"redis"`
-	Kafka    kafka.ProducerConfig `mapstructure:"kafka"`
+	Postgres      postgres.Config      `mapstructure:"postgres"`
+	Redis         redis.Config         `mapstructure:"redis"`
+	Kafka         kafka.ProducerConfig `mapstructure:"kafka"`
+	KafkaConsumer kafka.ConsumerConfig `mapstructure:"kafka_consumer"`
 }
 
 func Load() Config {
@@ -48,6 +49,10 @@ func Load() Config {
 	v.SetDefault("redis.pool_size", 10)
 
 	v.SetDefault("kafka.brokers", []string{"localhost:9092"})
+
+	v.SetDefault("kafka_consumer.brokers", []string{"localhost:9092"})
+	v.SetDefault("kafka_consumer.group_id", "playback-session")
+	v.SetDefault("kafka_consumer.topic", "playback.heartbeat")
 
 	configName := "config.local"
 	if name := os.Getenv("CONFIG_NAME"); name != "" {

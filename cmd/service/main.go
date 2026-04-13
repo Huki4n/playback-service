@@ -1,18 +1,24 @@
 package main
 
 import (
+	"log/slog"
+
 	"go.uber.org/fx"
 
 	"service/internal/config"
 	"service/internal/handler"
+	"service/internal/kafka"
 	"service/internal/logger"
+	"service/internal/postgres"
+	goredis "service/internal/redis"
 	"service/internal/server"
+	"service/internal/session"
 	"service/internal/tracing"
 )
 
-// @title           Service API
+// @title           Playback Session Service API
 // @version         1.0
-// @description     API шаблона микросервиса.
+// @description     Сервис управления сессиями воспроизведения музыкального стримингового сервиса.
 // @host            localhost:8080
 // @BasePath        /api/v1
 func main() {
@@ -23,9 +29,29 @@ func main() {
 		fx.Provide(
 			logger.New,
 			handler.New,
+
+			// Infrastructure
+			func(c config.Config) postgres.Config      { return c.Postgres },
+			func(c config.Config) goredis.Config       { return c.Redis },
+			func(c config.Config) kafka.ProducerConfig { return c.Kafka },
+			func(c config.Config) kafka.ConsumerConfig { return c.KafkaConsumer },
+
+			postgres.New,
+			goredis.New,
+			kafka.NewProducer,
+
+			// Session domain
+			session.NewRepository,
+			session.NewService,
+			session.NewHandler,
+			session.NewHeartbeatConsumer,
 		),
 		fx.Invoke(
 			tracing.Register,
+			func(cfg config.Config, log *slog.Logger) error {
+				return postgres.RunMigrations(cfg.Postgres.DSN, "./migrations", log)
+			},
+			session.RegisterConsumer,
 			server.Register,
 		),
 		fx.StopTimeout(cfg.ShutdownTimeout),
