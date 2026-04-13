@@ -7,7 +7,7 @@ tracing_enabled: true
 otlp_endpoint: localhost:4317
 
 postgres:
-  dsn: "postgres://postgres:postgres@localhost:5432/tracks?sslmode=disable"
+  dsn: "postgres://postgres:postgres@localhost:5432/playback?sslmode=disable"
   max_conns: 10
   min_conns: 2
 
@@ -18,5 +18,10 @@ redis:
 
 kafka:
   brokers:
-    - "localhost:9092"
-  topic: "playback"
+    - "127.0.0.1:9094"
+
+kafka_consumer:
+  brokers:
+    - "127.0.0.1:9094"
+  group_id: "playback-session"
+  topic: "playback.heartbeat"
