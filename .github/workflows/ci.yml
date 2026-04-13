@@ -12,13 +12,13 @@ permissions:
 
 jobs:
   lint:
-    uses: <owner>/swe-proj/.github/workflows/go-lint.yml@main
+    uses: fastrapier/swe-proj/.github/workflows/go-lint.yml@main
     # with:
     #   go-version: "1.26"
     #   working-directory: "."
 
   test:
-    uses: <owner>/swe-proj/.github/workflows/go-test.yml@main
+    uses: fastrapier/swe-proj/.github/workflows/go-test.yml@main
     # with:
     #   go-version: "1.26"
     #   working-directory: "."
@@ -26,9 +26,9 @@ jobs:
   build:
     needs: [lint, test]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    uses: <owner>/swe-proj/.github/workflows/docker-build-push.yml@main
+    uses: fastrapier/swe-proj/.github/workflows/docker-build-push.yml@main
     with:
-      image-name: my-service
+      image-name: playback-service
     permissions:
       contents: read
       packages: write

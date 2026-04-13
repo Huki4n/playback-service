@@ -3,7 +3,7 @@
        docker-down docker-logs \
        migrate-up migrate-down migrate-create
 
-APP_NAME := service
+APP_NAME := playback-service
 BUILD_DIR := ./bin
 MIGRATIONS_DIR := ./migrations
 DB_DSN ?= postgres://postgres:postgres@localhost:5432/playback?sslmode=disable

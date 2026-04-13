@@ -6,7 +6,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SERVICE_NAME: "my-service"
+      SERVICE_NAME: "playback-service"
       HTTP_PORT: "8080"
       LOG_LEVEL: "info"
       SHUTDOWN_TIMEOUT: "15s"
