@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "API шаблона микросервиса.",
-        "title": "Service API",
+        "description": "Сервис управления сессиями воспроизведения музыкального стримингового сервиса.",
+        "title": "Playback Session Service API",
         "contact": {},
         "version": "1.0"
     },
@@ -84,6 +84,391 @@
                             }
                         }
                     }
+                }
+            }
+        },
+        "/sessions": {
+            "post": {
+                "description": "Creates or replaces the active session for the authenticated user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "session"
+                ],
+                "summary": "Start a playback session",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User identifier",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Session start payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_session.StartRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/internal_session.PlaybackSession"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/service_internal_apperror.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/service_internal_apperror.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/service_internal_apperror.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/current": {
+            "get": {
+                "description": "Returns the latest session state; used by a new device to resume playback.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "session"
+                ],
+                "summary": "Get current playback session",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User identifier",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_session.PlaybackSession"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/service_internal_apperror.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/service_internal_apperror.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/service_internal_apperror.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/heartbeat": {
+            "put": {
+                "description": "Updates the current track and position. Must be called every ≤5 seconds.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "session"
+                ],
+                "summary": "Send a playback heartbeat",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User identifier",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Heartbeat payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_session.HeartbeatRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/service_internal_apperror.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/service_internal_apperror.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/service_internal_apperror.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/pause": {
+            "put": {
+                "description": "Sets the session status to paused.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "session"
+                ],
+                "summary": "Pause playback",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User identifier",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Device identifier",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_session.PauseResumeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_session.PlaybackSession"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/service_internal_apperror.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/service_internal_apperror.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/service_internal_apperror.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/service_internal_apperror.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/resume": {
+            "put": {
+                "description": "Sets the session status to playing; supports cross-device resume.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "session"
+                ],
+                "summary": "Resume playback",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User identifier",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Device identifier",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_session.PauseResumeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_session.PlaybackSession"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/service_internal_apperror.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/service_internal_apperror.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/service_internal_apperror.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/service_internal_apperror.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "internal_session.HeartbeatRequest": {
+            "type": "object",
+            "required": [
+                "device_id",
+                "track_id"
+            ],
+            "properties": {
+                "device_id": {
+                    "type": "string"
+                },
+                "position_sec": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "track_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_session.PauseResumeRequest": {
+            "type": "object",
+            "required": [
+                "device_id"
+            ],
+            "properties": {
+                "device_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_session.PlaybackSession": {
+            "type": "object",
+            "properties": {
+                "device_id": {
+                    "type": "string"
+                },
+                "position_sec": {
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "playing | paused",
+                    "type": "string"
+                },
+                "track_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_session.StartRequest": {
+            "type": "object",
+            "required": [
+                "device_id",
+                "track_id"
+            ],
+            "properties": {
+                "device_id": {
+                    "type": "string"
+                },
+                "position_sec": {
+                    "type": "integer"
+                },
+                "track_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "service_internal_apperror.ErrorBody": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "service_internal_apperror.Response": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "$ref": "#/definitions/service_internal_apperror.ErrorBody"
                 }
             }
         }

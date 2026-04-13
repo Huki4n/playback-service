@@ -1,9 +1,71 @@
 basePath: /api/v1
+definitions:
+  internal_session.HeartbeatRequest:
+    properties:
+      device_id:
+        type: string
+      position_sec:
+        minimum: 0
+        type: integer
+      track_id:
+        type: string
+    required:
+    - device_id
+    - track_id
+    type: object
+  internal_session.PauseResumeRequest:
+    properties:
+      device_id:
+        type: string
+    required:
+    - device_id
+    type: object
+  internal_session.PlaybackSession:
+    properties:
+      device_id:
+        type: string
+      position_sec:
+        type: integer
+      status:
+        description: playing | paused
+        type: string
+      track_id:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  internal_session.StartRequest:
+    properties:
+      device_id:
+        type: string
+      position_sec:
+        type: integer
+      track_id:
+        type: string
+    required:
+    - device_id
+    - track_id
+    type: object
+  service_internal_apperror.ErrorBody:
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+    type: object
+  service_internal_apperror.Response:
+    properties:
+      error:
+        $ref: '#/definitions/service_internal_apperror.ErrorBody'
+    type: object
 host: localhost:8080
 info:
   contact: {}
-  description: API шаблона микросервиса.
-  title: Service API
+  description: Сервис управления сессиями воспроизведения музыкального стримингового
+    сервиса.
+  title: Playback Session Service API
   version: "1.0"
 paths:
   /example:
@@ -59,4 +121,199 @@ paths:
       summary: Проверка готовности сервиса
       tags:
       - infrastructure
+  /sessions:
+    post:
+      consumes:
+      - application/json
+      description: Creates or replaces the active session for the authenticated user.
+      parameters:
+      - description: User identifier
+        in: header
+        name: X-User-ID
+        required: true
+        type: string
+      - description: Session start payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_session.StartRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_session.PlaybackSession'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/service_internal_apperror.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/service_internal_apperror.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/service_internal_apperror.Response'
+      summary: Start a playback session
+      tags:
+      - session
+  /sessions/current:
+    get:
+      description: Returns the latest session state; used by a new device to resume
+        playback.
+      parameters:
+      - description: User identifier
+        in: header
+        name: X-User-ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_session.PlaybackSession'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/service_internal_apperror.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/service_internal_apperror.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/service_internal_apperror.Response'
+      summary: Get current playback session
+      tags:
+      - session
+  /sessions/heartbeat:
+    put:
+      consumes:
+      - application/json
+      description: Updates the current track and position. Must be called every ≤5
+        seconds.
+      parameters:
+      - description: User identifier
+        in: header
+        name: X-User-ID
+        required: true
+        type: string
+      - description: Heartbeat payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_session.HeartbeatRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/service_internal_apperror.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/service_internal_apperror.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/service_internal_apperror.Response'
+      summary: Send a playback heartbeat
+      tags:
+      - session
+  /sessions/pause:
+    put:
+      consumes:
+      - application/json
+      description: Sets the session status to paused.
+      parameters:
+      - description: User identifier
+        in: header
+        name: X-User-ID
+        required: true
+        type: string
+      - description: Device identifier
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_session.PauseResumeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_session.PlaybackSession'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/service_internal_apperror.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/service_internal_apperror.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/service_internal_apperror.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/service_internal_apperror.Response'
+      summary: Pause playback
+      tags:
+      - session
+  /sessions/resume:
+    put:
+      consumes:
+      - application/json
+      description: Sets the session status to playing; supports cross-device resume.
+      parameters:
+      - description: User identifier
+        in: header
+        name: X-User-ID
+        required: true
+        type: string
+      - description: Device identifier
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_session.PauseResumeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_session.PlaybackSession'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/service_internal_apperror.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/service_internal_apperror.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/service_internal_apperror.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/service_internal_apperror.Response'
+      summary: Resume playback
+      tags:
+      - session
 swagger: "2.0"

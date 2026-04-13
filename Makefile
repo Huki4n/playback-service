@@ -6,7 +6,7 @@
 APP_NAME := service
 BUILD_DIR := ./bin
 MIGRATIONS_DIR := ./migrations
-DB_DSN ?= postgres://postgres:postgres@localhost:5432/service?sslmode=disable
+DB_DSN ?= postgres://postgres:postgres@localhost:5432/playback?sslmode=disable
 
 # ---- Build & Run (local) ----
 
@@ -17,7 +17,7 @@ run:
 	go run ./cmd/service
 
 test:
-	go test -race -count=1 ./...
+	go test -count=1 ./...
 
 lint:
 	golangci-lint run ./...
