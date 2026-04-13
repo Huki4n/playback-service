@@ -3,7 +3,6 @@ package logger
 import (
 	"log/slog"
 	"os"
-
 	"service/internal/config"
 )
 

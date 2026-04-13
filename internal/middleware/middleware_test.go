@@ -3,12 +3,11 @@ package middleware_test
 import (
 	"log/slog"
 	"net/http"
+	"service/internal/middleware"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/valyala/fasthttp"
-
-	"service/internal/middleware"
 )
 
 func TestRequestID_GeneratesWhenMissing(t *testing.T) {

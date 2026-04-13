@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"service/internal/kafka"
+	"service/internal/postgres"
+	"service/internal/redis"
 	"strings"
 	"time"
 
 	"github.com/spf13/viper"
-
-	"service/internal/kafka"
-	"service/internal/postgres"
-	"service/internal/redis"
 )
 
 type Config struct {

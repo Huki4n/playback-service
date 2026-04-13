@@ -2,18 +2,18 @@ package main
 
 import (
 	"log/slog"
-
-	"go.uber.org/fx"
-
 	"service/internal/config"
 	"service/internal/handler"
 	"service/internal/kafka"
 	"service/internal/logger"
 	"service/internal/postgres"
-	goredis "service/internal/redis"
 	"service/internal/server"
 	"service/internal/session"
 	"service/internal/tracing"
+
+	"go.uber.org/fx"
+
+	goredis "service/internal/redis"
 )
 
 // @title           Playback Session Service API

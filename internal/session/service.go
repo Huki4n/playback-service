@@ -3,10 +3,9 @@ package session
 import (
 	"context"
 	"log/slog"
-	"time"
-
 	"service/internal/apperror"
 	"service/internal/kafka"
+	"time"
 )
 
 const heartbeatTopic = "playback.heartbeat"

@@ -2,12 +2,11 @@ package config_test
 
 import (
 	"os"
+	"service/internal/config"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"service/internal/config"
 )
 
 func TestLoad_Defaults(t *testing.T) {

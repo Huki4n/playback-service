@@ -4,13 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"service/internal/apperror"
 	"strings"
 	"sync"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/valyala/fasthttp"
-
-	"service/internal/apperror"
 )
 
 var (

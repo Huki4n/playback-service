@@ -6,13 +6,12 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"service/internal/apperror"
 	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	goredis "github.com/redis/go-redis/v9"
-
-	"service/internal/apperror"
 )
 
 const (

@@ -6,14 +6,13 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"service/internal/apperror"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/valyala/fasthttp"
-
-	"service/internal/apperror"
 )
 
 // ── mock service ─────────────────────────────────────────────────────────────

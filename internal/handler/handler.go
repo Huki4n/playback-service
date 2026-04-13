@@ -3,11 +3,10 @@ package handler
 import (
 	"encoding/json"
 	"log/slog"
+	"service/internal/apperror"
 	"sync/atomic"
 
 	"github.com/valyala/fasthttp"
-
-	"service/internal/apperror"
 )
 
 type Handler struct {

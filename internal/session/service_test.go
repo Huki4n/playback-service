@@ -4,12 +4,11 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"service/internal/apperror"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"service/internal/apperror"
 )
 
 // ── mocks ────────────────────────────────────────────────────────────────────

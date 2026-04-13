@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"log/slog"
 	"net"
+	"service/internal/config"
+	"service/internal/handler"
+	"service/internal/middleware"
+	"service/internal/session"
 	"time"
 
 	"github.com/fasthttp/router"
@@ -15,10 +19,6 @@ import (
 	"go.uber.org/fx"
 
 	_ "service/docs"
-	"service/internal/config"
-	"service/internal/handler"
-	"service/internal/middleware"
-	"service/internal/session"
 )
 
 func withRoute(pattern string, next fasthttp.RequestHandler) fasthttp.RequestHandler {

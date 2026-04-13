@@ -4,12 +4,11 @@ import (
 	"context"
 	"errors"
 	"log/slog"
-
-	"github.com/valyala/fasthttp"
-
 	"service/internal/apperror"
 	"service/internal/handler"
 	"service/internal/validator"
+
+	"github.com/valyala/fasthttp"
 )
 
 // sessionService defines the business operations required by Handler.
