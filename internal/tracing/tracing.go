@@ -46,13 +46,12 @@ func Register(lc fx.Lifecycle, cfg config.Config, logger *slog.Logger) error {
 func setup(serviceName, otlpEndpoint string) (func(context.Context) error, error) {
 	ctx := context.Background()
 
-	res, err := resource.Merge(
-		resource.Default(),
-		resource.NewWithAttributes(
-			semconv.SchemaURL,
-			semconv.ServiceName(serviceName),
-		),
-	)
+	// NewSchemaless avoids a schema URL conflict between resource.Default()
+	// (which uses semconv v1.40.0) and our semconv/v1.26.0 import.
+	// resource.Merge accepts a schemaless resource and adopts the schema URL
+	// from the non-empty side (resource.Default()).
+	custom := resource.NewSchemaless(semconv.ServiceName(serviceName))
+	res, err := resource.Merge(resource.Default(), custom)
 	if err != nil {
 		return nil, fmt.Errorf("create resource: %w", err)
 	}
