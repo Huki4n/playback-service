@@ -13,10 +13,10 @@ permissions:
 jobs:
   lint:
     uses: fastrapier/swe-proj/.github/workflows/go-lint.yml@main
-    # with:
-    #   go-version: "1.26"
-    #   working-directory: "."
-
+    with:
+      go-version: "1.26"
+      working-directory: "."
+      golangci-lint-version: "v2.11"
   test:
     uses: fastrapier/swe-proj/.github/workflows/go-test.yml@main
     # with:
