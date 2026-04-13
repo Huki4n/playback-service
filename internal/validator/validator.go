@@ -2,6 +2,7 @@ package validator
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -37,7 +38,8 @@ func BindJSON(ctx *fasthttp.RequestCtx, dst any) *apperror.Error {
 	}
 
 	if err := instance().Struct(dst); err != nil {
-		if ve, ok := err.(validator.ValidationErrors); ok {
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
 			return apperror.NewValidation(formatValidationErrors(ve))
 		}
 		return apperror.NewValidation(err.Error())

@@ -25,10 +25,12 @@ type mockRepo struct {
 func (m *mockRepo) Get(_ context.Context, _ string) (*PlaybackSession, error) {
 	return m.getResult, m.getErr
 }
+
 func (m *mockRepo) Upsert(_ context.Context, s *PlaybackSession) error {
 	m.upserted = s
 	return m.upsertErr
 }
+
 func (m *mockRepo) SetCache(_ context.Context, _ *PlaybackSession) error {
 	return m.setCacheErr
 }

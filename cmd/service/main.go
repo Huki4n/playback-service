@@ -31,8 +31,8 @@ func main() {
 			handler.New,
 
 			// Infrastructure
-			func(c config.Config) postgres.Config      { return c.Postgres },
-			func(c config.Config) goredis.Config       { return c.Redis },
+			func(c config.Config) postgres.Config { return c.Postgres },
+			func(c config.Config) goredis.Config { return c.Redis },
 			func(c config.Config) kafka.ProducerConfig { return c.Kafka },
 			func(c config.Config) kafka.ConsumerConfig { return c.KafkaConsumer },
 

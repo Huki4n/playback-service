@@ -33,15 +33,19 @@ type mockSvc struct {
 func (m *mockSvc) Start(_ context.Context, _ string, _ StartRequest) (*PlaybackSession, error) {
 	return m.startResult, m.startErr
 }
+
 func (m *mockSvc) GetCurrent(_ context.Context, _ string) (*PlaybackSession, error) {
 	return m.getCurrentResult, m.getCurrentErr
 }
+
 func (m *mockSvc) Heartbeat(_ context.Context, _ string, _ HeartbeatRequest) error {
 	return m.heartbeatErr
 }
+
 func (m *mockSvc) Pause(_ context.Context, _, _ string) (*PlaybackSession, error) {
 	return m.pauseResult, m.pauseErr
 }
+
 func (m *mockSvc) Resume(_ context.Context, _, _ string) (*PlaybackSession, error) {
 	return m.resumeResult, m.resumeErr
 }

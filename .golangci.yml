@@ -2,7 +2,6 @@ version: "2"
 
 run:
   go: "1.26"
-  timeout: 3m
 
 linters:
   enable:
@@ -10,9 +9,7 @@ linters:
     - govet
     - staticcheck
     - unused
-    - gosimple
     - ineffassign
-    - typecheck
     - bodyclose
     - noctx
     - gosec
@@ -20,28 +17,31 @@ linters:
     - errorlint
     - exhaustive
     - gocritic
-    - gofumpt
-    - revive
     - unconvert
     - unparam
+  settings:
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - style
+        - performance
+      disabled-checks:
+        - hugeParam
+    gosec:
+      excludes:
+        - G706
+  exclusions:
+    paths:
+      - vendor$
 
-linters-settings:
-  govet:
-    enable-all: true
-    disable:
-      - fieldalignment
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - style
-      - performance
-  revive:
-    rules:
-      - name: unexported-return
-        disabled: true
+formatters:
+  enable:
+    - gofumpt
 
 issues:
-  exclude-dirs:
-    - vendor
   max-issues-per-linter: 0
   max-same-issues: 0

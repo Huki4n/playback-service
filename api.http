@@ -1,0 +1,298 @@
+### Variables
+@host = http://localhost:8080
+@userId = user-123
+@trackId = track-456
+@deviceId = device-mobile-1
+@deviceId2 = device-desktop-2
+
+### ──────────────────────────────────────────
+### Infrastructure
+### ──────────────────────────────────────────
+
+### Healthz
+GET {{host}}/healthz
+
+> {%
+  client.test("status 200", function() {
+    client.assert(response.status === 200, "got " + response.status);
+  });
+  client.test("status ok", function() {
+    client.assert(response.body.status === "ok", "got " + response.body.status);
+  });
+%}
+
+###
+
+### Readyz
+GET {{host}}/readyz
+
+> {%
+  client.test("status 200", function() {
+    client.assert(response.status === 200, "got " + response.status);
+  });
+  client.test("status ready", function() {
+    client.assert(response.body.status === "ready", "got " + response.body.status);
+  });
+%}
+
+###
+
+### Metrics (Prometheus)
+GET {{host}}/metrics
+
+> {%
+  client.test("status 200", function() {
+    client.assert(response.status === 200, "got " + response.status);
+  });
+  client.test("content-type text", function() {
+    client.assert(response.contentType.mimeType === "text/plain", "got " + response.contentType.mimeType);
+  });
+%}
+
+###
+
+### Example endpoint
+GET {{host}}/api/v1/example
+
+> {%
+  client.test("status 200", function() {
+    client.assert(response.status === 200, "got " + response.status);
+  });
+  client.test("has message", function() {
+    client.assert(typeof response.body.message === "string", "no message field");
+  });
+%}
+
+###
+
+### Swagger UI
+GET {{host}}/swagger/index.html
+
+> {%
+  client.test("status 200", function() {
+    client.assert(response.status === 200, "got " + response.status);
+  });
+%}
+
+###
+
+### ──────────────────────────────────────────
+### Playback Session
+### ──────────────────────────────────────────
+
+### Start session (создать / заменить активную сессию)
+POST {{host}}/api/v1/sessions
+Content-Type: application/json
+X-User-ID: {{userId}}
+
+{
+  "track_id": "{{trackId}}",
+  "device_id": "{{deviceId}}",
+  "position_sec": 0
+}
+
+> {%
+  client.test("status 201", function() {
+    client.assert(response.status === 201, "got " + response.status);
+  });
+  client.test("user_id matches", function() {
+    client.assert(response.body.user_id === "user-123", "got " + response.body.user_id);
+  });
+  client.test("track_id matches", function() {
+    client.assert(response.body.track_id === "track-456", "got " + response.body.track_id);
+  });
+  client.test("status is playing", function() {
+    client.assert(response.body.status === "playing", "got " + response.body.status);
+  });
+  client.test("device_id matches", function() {
+    client.assert(response.body.device_id === "device-mobile-1", "got " + response.body.device_id);
+  });
+  client.test("position_sec is 0", function() {
+    client.assert(response.body.position_sec === 0, "got " + response.body.position_sec);
+  });
+%}
+
+###
+
+### Start session — resume from position
+POST {{host}}/api/v1/sessions
+Content-Type: application/json
+X-User-ID: {{userId}}
+
+{
+  "track_id": "{{trackId}}",
+  "device_id": "{{deviceId}}",
+  "position_sec": 95
+}
+
+> {%
+  client.test("status 201", function() {
+    client.assert(response.status === 201, "got " + response.status);
+  });
+  client.test("position_sec is 95", function() {
+    client.assert(response.body.position_sec === 95, "got " + response.body.position_sec);
+  });
+  client.test("status is playing", function() {
+    client.assert(response.body.status === "playing", "got " + response.body.status);
+  });
+%}
+
+###
+
+### Get current session
+GET {{host}}/api/v1/sessions/current
+X-User-ID: {{userId}}
+
+> {%
+  client.test("status 200", function() {
+    client.assert(response.status === 200, "got " + response.status);
+  });
+  client.test("user_id matches", function() {
+    client.assert(response.body.user_id === "user-123", "got " + response.body.user_id);
+  });
+  client.test("has track_id", function() {
+    client.assert(typeof response.body.track_id === "string" && response.body.track_id !== "", "empty track_id");
+  });
+  client.test("has updated_at", function() {
+    client.assert(typeof response.body.updated_at === "string", "no updated_at");
+  });
+%}
+
+###
+
+### Get current session — неизвестный пользователь (404)
+GET {{host}}/api/v1/sessions/current
+X-User-ID: user-unknown-999
+
+> {%
+  client.test("status 404", function() {
+    client.assert(response.status === 404, "got " + response.status);
+  });
+  client.test("error code NOT_FOUND", function() {
+    client.assert(response.body.error.code === "NOT_FOUND", "got " + response.body.error.code);
+  });
+%}
+
+###
+
+### Get current session — без заголовка (401)
+GET {{host}}/api/v1/sessions/current
+
+> {%
+  client.test("status 401", function() {
+    client.assert(response.status === 401, "got " + response.status);
+  });
+  client.test("error code UNAUTHORIZED", function() {
+    client.assert(response.body.error.code === "UNAUTHORIZED", "got " + response.body.error.code);
+  });
+%}
+
+###
+
+### Heartbeat — обновить позицию
+PUT {{host}}/api/v1/sessions/heartbeat
+Content-Type: application/json
+X-User-ID: {{userId}}
+
+{
+  "track_id": "{{trackId}}",
+  "position_sec": 42,
+  "device_id": "{{deviceId}}"
+}
+
+> {%
+  client.test("status 204", function() {
+    client.assert(response.status === 204, "got " + response.status);
+  });
+%}
+
+###
+
+### Heartbeat — невалидное тело (400)
+PUT {{host}}/api/v1/sessions/heartbeat
+Content-Type: application/json
+X-User-ID: {{userId}}
+
+{
+  "position_sec": 42
+}
+
+> {%
+  client.test("status 400", function() {
+    client.assert(response.status === 400, "got " + response.status);
+  });
+  client.test("error code VALIDATION_ERROR", function() {
+    client.assert(response.body.error.code === "VALIDATION_ERROR", "got " + response.body.error.code);
+  });
+%}
+
+###
+
+### Pause
+PUT {{host}}/api/v1/sessions/pause
+Content-Type: application/json
+X-User-ID: {{userId}}
+
+{
+  "device_id": "{{deviceId}}"
+}
+
+> {%
+  client.test("status 200", function() {
+    client.assert(response.status === 200, "got " + response.status);
+  });
+  client.test("status is paused", function() {
+    client.assert(response.body.status === "paused", "got " + response.body.status);
+  });
+  client.test("device_id matches", function() {
+    client.assert(response.body.device_id === "device-mobile-1", "got " + response.body.device_id);
+  });
+%}
+
+###
+
+### Resume — на том же устройстве
+PUT {{host}}/api/v1/sessions/resume
+Content-Type: application/json
+X-User-ID: {{userId}}
+
+{
+  "device_id": "{{deviceId}}"
+}
+
+> {%
+  client.test("status 200", function() {
+    client.assert(response.status === 200, "got " + response.status);
+  });
+  client.test("status is playing", function() {
+    client.assert(response.body.status === "playing", "got " + response.body.status);
+  });
+  client.test("device_id matches", function() {
+    client.assert(response.body.device_id === "device-mobile-1", "got " + response.body.device_id);
+  });
+%}
+
+###
+
+### Resume — с другого устройства (cross-device)
+PUT {{host}}/api/v1/sessions/resume
+Content-Type: application/json
+X-User-ID: {{userId}}
+
+{
+  "device_id": "{{deviceId2}}"
+}
+
+> {%
+  client.test("status 200", function() {
+    client.assert(response.status === 200, "got " + response.status);
+  });
+  client.test("status is playing", function() {
+    client.assert(response.body.status === "playing", "got " + response.body.status);
+  });
+  client.test("device switched to desktop", function() {
+    client.assert(response.body.device_id === "device-desktop-2", "got " + response.body.device_id);
+  });
+%}
+
+###

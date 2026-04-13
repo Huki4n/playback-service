@@ -66,7 +66,7 @@ func Register(lc fx.Lifecycle, cfg config.Config, logger *slog.Logger, h *handle
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			ln, err := net.Listen("tcp", addr)
+			ln, err := (&net.ListenConfig{}).Listen(ctx, "tcp", addr)
 			if err != nil {
 				return fmt.Errorf("listen %s: %w", addr, err)
 			}

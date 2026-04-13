@@ -16,7 +16,15 @@ func RunMigrations(dsn, migrationsPath string, logger *slog.Logger) error {
 	if err != nil {
 		return fmt.Errorf("init migrations: %w", err)
 	}
-	defer m.Close()
+	defer func() {
+		srcErr, dbErr := m.Close()
+		if srcErr != nil {
+			logger.Warn("migrate source close error", "error", srcErr)
+		}
+		if dbErr != nil {
+			logger.Warn("migrate database close error", "error", dbErr)
+		}
+	}()
 
 	if err = m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
 		return fmt.Errorf("run migrations: %w", err)

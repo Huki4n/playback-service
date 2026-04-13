@@ -118,9 +118,9 @@ func (c *fasthttpCarrier) Set(key, value string) {
 
 func (c *fasthttpCarrier) Keys() []string {
 	var keys []string
-	c.req.Header.VisitAll(func(k, _ []byte) {
+	for k := range c.req.Header.All() {
 		keys = append(keys, string(k))
-	})
+	}
 	return keys
 }
 

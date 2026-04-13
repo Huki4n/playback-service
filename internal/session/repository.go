@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	cacheTTL      = 24 * time.Hour
+	cacheTTL       = 24 * time.Hour
 	cacheKeyPrefix = "session:"
 )
 
@@ -57,8 +57,9 @@ func (r *Repository) Get(ctx context.Context, userID string) (*PlaybackSession, 
 	}
 
 	// warm the cache asynchronously so the caller is not blocked
+	warmCtx := context.WithoutCancel(ctx)
 	go func() {
-		if cacheErr := r.SetCache(context.Background(), s); cacheErr != nil {
+		if cacheErr := r.SetCache(warmCtx, s); cacheErr != nil {
 			r.logger.Warn("cache warm failed", "user_id", userID, "error", cacheErr)
 		}
 	}()
